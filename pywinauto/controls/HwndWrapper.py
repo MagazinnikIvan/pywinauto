@@ -42,9 +42,9 @@ import locale
 # the actions - as such I don't want to require sendkeys - so
 # the following makes the import optional.
 
-from .. import SendKeysCtypes as SendKeys
-from .. import win32functions
-from ..actionlogger import ActionLogger
+from pywinauto import SendKeysCtypes as SendKeys
+from pywinauto import win32functions
+from pywinauto.actionlogger import ActionLogger
 
 # I leave this optional because PIL is a large dependency
 try:
@@ -52,19 +52,17 @@ try:
 except ImportError:
     ImageGrab = None
 
-from .. import six
-from .. import win32defines
-from .. import win32structures
-from ..timings import Timings
-from .. import timings
-
+from pywinauto import six
+from pywinauto import win32defines
+from pywinauto import win32structures
+from pywinauto.timings import Timings
+from pywinauto import timings
 #from .. import findbestmatch
-from .. import handleprops
-
+from pywinauto import handleprops
 # also import MenuItemNotEnabled so that it is
 # accessible from HwndWrapper module
-from .menuwrapper import Menu #, MenuItemNotEnabled
-
+from pywinauto.controls.menuwrapper import Menu #, MenuItemNotEnabled
+from pywinauto import mouse
 
 
 
@@ -94,7 +92,6 @@ class _MetaWrapper(type):
     "Metaclass for Wrapper objects"
     re_wrappers = {}
     str_wrappers = {}
-    control_types = {}
 
     def __init__(cls, name, bases, attrs):
         # register the class names, both the regular expression
@@ -106,8 +103,6 @@ class _MetaWrapper(type):
         for win_class in cls.windowclasses:
             _MetaWrapper.re_wrappers[re.compile(win_class)] = cls
             _MetaWrapper.str_wrappers[win_class] = cls
-        for control_type in cls.controltypes:
-            _MetaWrapper.control_types[control_type] = cls
 
     @staticmethod
     def FindWrapper(handle):
@@ -139,17 +134,6 @@ class _MetaWrapper(type):
         #if handle in meta.wrappers:
         #    return meta.wrappers[handle]
 
-    @staticmethod
-    def FindWrapperUIA(elementinfo):
-        """Find the wrapper for this elementinfo"""
-        wrapper = FindWrapper(elementinfo.handle)
-
-        if wrapper == HwndWrapper:
-            try:
-                return _MetaWrapper.control_types[elementinfo.controlType]
-            except KeyError:
-                return HwndWrapper
-
 
 #====================================================================
 @six.add_metaclass(_MetaWrapper)
@@ -173,7 +157,6 @@ class HwndWrapper(object):
 
     friendlyclassname = None
     windowclasses = []
-    controltypes = []
     handle = None
     can_be_label = False
     has_title = True
@@ -911,8 +894,43 @@ class HwndWrapper(object):
            as that could easily move the mouse off the control before the
            Click has finished.
         """
+        if self is None:
+            self = HwndWrapper(win32functions.GetDesktopWindow())
+        elif self.IsDialog():
+            self.SetFocus()
+        ctrl_text = self.WindowText()
+        if isinstance(coords, win32structures.RECT):
+            coords = [coords.left, coords.top]
+
+    #    # allow points objects to be passed as the coords
+        if isinstance(coords, win32structures.POINT):
+            coords = [coords.x, coords.y]
+    #    else:
+        coords = list(coords)
+
+        # set the default coordinates
+        if coords[0] is None:
+            coords[0] = int(self.Rectangle().width() / 2)
+        if coords[1] is None:
+            coords[1] = int(self.Rectangle().height() / 2)
+
+        if not absolute:
+            coords = self.ClientToScreen(coords)
+
         _perform_click_input(
-            self, button, coords, double, wheel_dist = wheel_dist, use_log = use_log, pressed = pressed, absolute = absolute)
+            button, coords, double, wheel_dist = wheel_dist, pressed = pressed)
+        
+        if use_log:
+            if ctrl_text is None:
+                ctrl_text = six.text_type(ctrl_text)
+            message = 'Clicked ' + self.FriendlyClassName() + ' "' + ctrl_text + \
+                      '" by ' + str(button) + ' button mouse click (x,y=' + ','.join([str(coord) for coord in coords]) + ')'
+            if double:
+                message = 'Double-c' + message[1:]
+            if button.lower() == 'move':
+                message = 'Moved mouse over ' + self.FriendlyClassName() + ' "' + ctrl_text + \
+                      '" to screen point (x,y=' + ','.join([str(coord) for coord in coords]) + ')'
+            ActionLogger().log(message)
 
 
     #-----------------------------------------------------------
@@ -965,7 +983,7 @@ class HwndWrapper(object):
     #-----------------------------------------------------------
     def DoubleClickInput(self, button = "left", coords = (None, None)):
         "Double click at the specified coordinates"
-        _perform_click_input(self, button, coords, double = True)
+        _perform_click_input(button, coords, double = True)
 
     #-----------------------------------------------------------
     def RightClick(
@@ -980,7 +998,7 @@ class HwndWrapper(object):
     #-----------------------------------------------------------
     def RightClickInput(self, coords = (None, None)):
         "Right click at the specified coords"
-        _perform_click_input(self, 'right', coords)
+        _perform_click_input('right', coords)
 
 
     #-----------------------------------------------------------
@@ -994,7 +1012,7 @@ class HwndWrapper(object):
     #-----------------------------------------------------------
     def PressMouseInput(self, button = "left", coords = (None, None), pressed = "", absolute = False, key_down = True, key_up = True):
         "Press a mouse button using SendInput"
-        _perform_click_input(self, button, coords, button_down=True, button_up=False, pressed=pressed, absolute=absolute, key_down=key_down, key_up=key_up)
+        _perform_click_input(button, coords, button_down=True, button_up=False, pressed=pressed, absolute=absolute, key_down=key_down, key_up=key_up)
 
 
     #-----------------------------------------------------------
@@ -1007,7 +1025,7 @@ class HwndWrapper(object):
     #-----------------------------------------------------------
     def ReleaseMouseInput(self, button = "left", coords = (None, None), pressed = "", absolute = False, key_down = True, key_up = True):
         "Release the mouse button"
-        _perform_click_input(self, button, coords, button_down=False, button_up=True, pressed=pressed, absolute=absolute, key_down=key_down, key_up=key_up)
+        _perform_click_input(button, coords, button_down=False, button_up=True, pressed=pressed, absolute=absolute, key_down=key_down, key_up=key_up)
 
     #-----------------------------------------------------------
     def MoveMouse(self, coords = (0, 0), pressed = "", absolute = False):
@@ -1028,7 +1046,7 @@ class HwndWrapper(object):
         if not absolute:
             self.actions.log('Moving mouse to relative (client) coordinates ' + str(coords).replace('\n', ', '))
         
-        _perform_click_input(self, button='move', coords=coords, absolute=absolute, pressed=pressed)
+        _perform_click_input(button='move', coords=coords, absolute=absolute, pressed=pressed)
         
         win32functions.WaitGuiThreadIdle(self)
         return self
@@ -1092,7 +1110,7 @@ class HwndWrapper(object):
         pressed = ""):
         "Do mouse wheel"
 
-        _perform_click_input(self, button='wheel', coords=coords, wheel_dist = 120 * wheel_dist, pressed=pressed)
+        _perform_click_input(button='wheel', coords=coords, wheel_dist = 120 * wheel_dist, pressed=pressed)
         return self
 
 
@@ -1693,167 +1711,6 @@ class HwndWrapper(object):
                 return child
 
         return None
-
-
-#====================================================================
-def _perform_click_input(
-    ctrl = None,
-    button = "left",
-    coords = (None, None),
-    double = False,
-    button_down = True,
-    button_up = True,
-    absolute = False,
-    wheel_dist = 0,
-    use_log = True,
-    pressed = "",
-    key_down = True,
-    key_up = True,
-    ):
-    """Peform a click action using SendInput
-
-    All the *ClickInput() and *MouseInput() methods use this function.
-    
-    Thanks to a bug report from Tomas Walch (twalch) on sourceforge and code 
-    seen at http://msdn.microsoft.com/en-us/magazine/cc164126.aspx this 
-    function now always works the same way whether the mouse buttons are 
-    swapped or not.
-    
-    For example if you send a right click to Notepad.Edit - it will always
-    bring up a popup menu rather than 'clicking' it.
-    """
-
-    # Handle if the mouse buttons are swapped
-    if win32functions.GetSystemMetrics(win32defines.SM_SWAPBUTTON):
-        if button.lower() == 'left':
-            button = 'right'
-        elif button.lower() == 'right':
-            button = 'left'
-
-    events = []
-    if button.lower() == 'left':
-        if button_down:
-            events.append(win32defines.MOUSEEVENTF_LEFTDOWN)
-        if button_up:
-            events.append(win32defines.MOUSEEVENTF_LEFTUP)
-    elif button.lower() == 'right':
-        if button_down:
-            events.append(win32defines.MOUSEEVENTF_RIGHTDOWN)
-        if button_up:
-            events.append(win32defines.MOUSEEVENTF_RIGHTUP)
-    elif button.lower() == 'middle':
-        if button_down:
-            events.append(win32defines.MOUSEEVENTF_MIDDLEDOWN)
-        if button_up:
-            events.append(win32defines.MOUSEEVENTF_MIDDLEUP)
-    elif button.lower() == 'move':
-        events.append(win32defines.MOUSEEVENTF_MOVE)
-        events.append(win32defines.MOUSEEVENTF_ABSOLUTE)
-    elif button.lower() == 'x':
-        if button_down:
-            events.append(win32defines.MOUSEEVENTF_XDOWN)
-        if button_up:
-            events.append(win32defines.MOUSEEVENTF_XUP)
-
-    if button.lower() == 'wheel':
-        events.append(win32defines.MOUSEEVENTF_WHEEL)
-
-
-    # if we were asked to double click (and we are doing a full click
-    # not just up or down.
-    if double and button_down and button_up:
-        events *= 2
-
-
-    if ctrl is None:
-        ctrl = HwndWrapper(win32functions.GetDesktopWindow())
-    elif ctrl.IsDialog():
-        ctrl.SetFocus()
-    ctrl_text = ctrl.WindowText()
-
-    if isinstance(coords, win32structures.RECT):
-        coords = [coords.left, coords.top]
-
-#    # allow points objects to be passed as the coords
-    if isinstance(coords, win32structures.POINT):
-        coords = [coords.x, coords.y]
-#    else:
-    coords = list(coords)
-
-    # set the default coordinates
-    if coords[0] is None:
-        coords[0] = int(ctrl.Rectangle().width() / 2)
-    if coords[1] is None:
-        coords[1] = int(ctrl.Rectangle().height() / 2)
-
-    if not absolute:
-        coords = ctrl.ClientToScreen(coords)
-
-    # set the cursor position
-    win32api.SetCursorPos((coords[0], coords[1]))
-    time.sleep(Timings.after_setcursorpos_wait)
-
-    inp_struct = win32structures.INPUT()
-    inp_struct.type = win32defines.INPUT_MOUSE
-
-    keyboard_keys = pressed.lower().split()
-    if ('control' in keyboard_keys) and key_down:
-        SendKeys.VirtualKeyAction(SendKeys.VK_CONTROL, up = False).Run()
-    if ('shift' in keyboard_keys) and key_down:
-        SendKeys.VirtualKeyAction(SendKeys.VK_SHIFT, up = False).Run()
-    if ('alt' in keyboard_keys) and key_down:
-        SendKeys.VirtualKeyAction(SendKeys.VK_MENU, up = False).Run()
-
-
-    inp_struct.mi.dwFlags = 0
-    for event in events:
-        inp_struct.mi.dwFlags |= event
-
-    dwData = 0
-    if button.lower() == 'wheel':
-        dwData = wheel_dist
-        inp_struct.mi.mouseData = wheel_dist
-    else:
-        inp_struct.mi.mouseData = 0
-
-    if button.lower() == 'move':
-        #win32functions.SendInput(     # vvryabov: SendInput() should be called sequentially in a loop [for event in events]
-        #    win32structures.UINT(1),
-        #    ctypes.pointer(inp_struct),
-        #    ctypes.c_int(ctypes.sizeof(inp_struct)))
-        X_res = win32functions.GetSystemMetrics(win32defines.SM_CXSCREEN)
-        Y_res = win32functions.GetSystemMetrics(win32defines.SM_CYSCREEN)
-        X_coord = int(float(coords[0]) * (65535. / float(X_res - 1)))
-        Y_coord = int(float(coords[1]) * (65535. / float(Y_res - 1)))
-        win32api.mouse_event(inp_struct.mi.dwFlags, X_coord, Y_coord, dwData)
-    else:
-        for event in events:
-            inp_struct.mi.dwFlags = event
-            win32api.mouse_event(inp_struct.mi.dwFlags, coords[0], coords[1], dwData)
-            time.sleep(Timings.after_clickinput_wait)
-
-    time.sleep(Timings.after_clickinput_wait)
-
-    if ('control' in keyboard_keys) and key_up:
-        SendKeys.VirtualKeyAction(SendKeys.VK_CONTROL, down = False).Run()
-    if ('shift' in keyboard_keys) and key_up:
-        SendKeys.VirtualKeyAction(SendKeys.VK_SHIFT, down = False).Run()
-    if ('alt' in keyboard_keys) and key_up:
-        SendKeys.VirtualKeyAction(SendKeys.VK_MENU, down = False).Run()
-
-    if use_log:
-        if ctrl_text is None:
-            ctrl_text = six.text_type(ctrl_text)
-        message = 'Clicked ' + ctrl.FriendlyClassName() + ' "' + ctrl_text + \
-                  '" by ' + str(button) + ' button mouse click (x,y=' + ','.join([str(coord) for coord in coords]) + ')'
-        if double:
-            message = 'Double-c' + message[1:]
-        if button.lower() == 'move':
-            message = 'Moved mouse over ' + ctrl.FriendlyClassName() + ' "' + ctrl_text + \
-                  '" to screen point (x,y=' + ','.join([str(coord) for coord in coords]) + ')'
-        ActionLogger().log(message)
-
-
 
 
 #====================================================================
