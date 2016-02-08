@@ -876,7 +876,9 @@ class HwndWrapper(object):
         wheel_dist = 0,
         use_log = True,
         pressed = "",
-        absolute = False):
+        absolute = False
+        key_down= True, 
+        key_up= True):
         """Click at the specified coordinates
 
         * **button** The mouse button to click. One of 'left', 'right',
@@ -894,9 +896,7 @@ class HwndWrapper(object):
            as that could easily move the mouse off the control before the
            Click has finished.
         """
-        if self is None:
-            self = HwndWrapper(win32functions.GetDesktopWindow())
-        elif self.IsDialog():
+        if self.IsDialog():
             self.SetFocus()
         ctrl_text = self.WindowText()
         if isinstance(coords, win32structures.RECT):
@@ -918,7 +918,7 @@ class HwndWrapper(object):
             coords = self.ClientToScreen(coords)
 
         _perform_click_input(
-            button, coords, double, wheel_dist = wheel_dist, pressed = pressed)
+            button, coords, double, wheel_dist = wheel_dist, pressed = pressed,key_down=key_down, key_up=key_up)
         
         if use_log:
             if ctrl_text is None:
@@ -983,7 +983,7 @@ class HwndWrapper(object):
     #-----------------------------------------------------------
     def DoubleClickInput(self, button = "left", coords = (None, None)):
         "Double click at the specified coordinates"
-        _perform_click_input(button, coords, double = True)
+        ClickInput(button, coords, double = True)
 
     #-----------------------------------------------------------
     def RightClick(
@@ -998,7 +998,7 @@ class HwndWrapper(object):
     #-----------------------------------------------------------
     def RightClickInput(self, coords = (None, None)):
         "Right click at the specified coords"
-        _perform_click_input('right', coords)
+        ClickInput('right', coords)
 
 
     #-----------------------------------------------------------
@@ -1012,7 +1012,7 @@ class HwndWrapper(object):
     #-----------------------------------------------------------
     def PressMouseInput(self, button = "left", coords = (None, None), pressed = "", absolute = False, key_down = True, key_up = True):
         "Press a mouse button using SendInput"
-        _perform_click_input(button, coords, button_down=True, button_up=False, pressed=pressed, absolute=absolute, key_down=key_down, key_up=key_up)
+        ClickInput(button, coords, button_down=True, button_up=False, pressed=pressed, absolute=absolute, key_down=key_down, key_up=key_up)
 
 
     #-----------------------------------------------------------
@@ -1025,7 +1025,7 @@ class HwndWrapper(object):
     #-----------------------------------------------------------
     def ReleaseMouseInput(self, button = "left", coords = (None, None), pressed = "", absolute = False, key_down = True, key_up = True):
         "Release the mouse button"
-        _perform_click_input(button, coords, button_down=False, button_up=True, pressed=pressed, absolute=absolute, key_down=key_down, key_up=key_up)
+        ClickInput(button, coords, button_down=False, button_up=True, pressed=pressed, absolute=absolute, key_down=key_down, key_up=key_up)
 
     #-----------------------------------------------------------
     def MoveMouse(self, coords = (0, 0), pressed = "", absolute = False):
@@ -1046,7 +1046,7 @@ class HwndWrapper(object):
         if not absolute:
             self.actions.log('Moving mouse to relative (client) coordinates ' + str(coords).replace('\n', ', '))
         
-        _perform_click_input(button='move', coords=coords, absolute=absolute, pressed=pressed)
+        ClickInput(button='move', coords=coords, absolute=absolute, pressed=pressed)
         
         win32functions.WaitGuiThreadIdle(self)
         return self
@@ -1110,7 +1110,7 @@ class HwndWrapper(object):
         pressed = ""):
         "Do mouse wheel"
 
-        _perform_click_input(button='wheel', coords=coords, wheel_dist = 120 * wheel_dist, pressed=pressed)
+        ClickInput(button='wheel', coords=coords, wheel_dist = 120 * wheel_dist, pressed=pressed)
         return self
 
 

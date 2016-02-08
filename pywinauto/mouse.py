@@ -20,8 +20,21 @@ BUTTON_MAPPING = {'left': 1, 'middle': 2, 'right': 3, 'up_scroll': 4,
 if sys.platform == 'linux':
     _display = Display()
     def _perform_click_input(button='left', coord=(0, 0),
-                             button_down=True, button_up=True, double = False):
+                             button_down=True, button_up=True, double = False,
+                             wheel_dist = 0, pressed = "", key_down = True, key_up = True,):
         move(coord)
+        if (button == 'wheel'):
+            wheel_dist = wheel_dist/120
+            if wheel_dist == 0:
+                return
+            if wheel_dist > 0:
+                button = 'up_scroll'
+            if wheel_dist < 0:
+                button = 'down_scroll'
+            for i in range(abs(wheel_dist)):
+                _perform_click_input(button, coord)
+            return
+
         button = BUTTON_MAPPING[button]
         if button_down:
             fake_input(_display, X.ButtonPress, button)
@@ -156,7 +169,7 @@ elif sys.platform == 'win32':
 
 
 def click(coord=(0, 0)):
-    _perform_click_input('left', coord)
+    _perform_click_input('left', coord,True,True)
 
 
 def double_click(coord=(0, 0)):
@@ -169,7 +182,10 @@ def right_click(coord=(0, 0)):
 
 
 def move(coords=(0, 0)):
-    fake_input(_display, X.MotionNotify, x=int(coords[0]), y=int(coords[1]))
+    x=int(coords[0])
+    y=int(coords[1])
+    if (x>=0 & y>=0):
+        fake_input(_display, X.MotionNotify, x=x, y=y)
     _display.sync()
 
 
@@ -181,26 +197,12 @@ def release(coord=(0, 0)):
     _perform_click_input('left', coord, False, True)
 
 
-def vertical_scroll(wheel_dist=1, coord=(0, 0)):
+def scroll(wheel_dist=1, coord=(0,0)):
     if wheel_dist == 0:
         return
-    if wheel_dist > 0:
-        button = 'up_scroll'
-    if wheel_dist < 0:
-        button = 'down_scroll'
-    for i in range(abs(wheel_dist)):
-        _perform_click_input(button, coord)
-
-
-def horizontal_scroll(wheel_dist=1, coord=(0, 0)):
-    if wheel_dist == 0:
-        return
-    if wheel_dist > 0:
-        button = 'left_scroll'
-    if wheel_dist < 0:
-        button = 'right_scroll'
-    for i in range(abs(wheel_dist)):
-        _perform_click_input(button, coord)
+    else:
+        wheel_dist = wheel_dist*120
+        _perform_click_input(button='wheel',wheel_dist=wheel_dist,coords=coord,pressed='pressed')
 
 
 def wheel_click(coord=(0, 0)):
