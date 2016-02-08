@@ -1,0 +1,306 @@
+To test your mouse with Qt, press buttons in this area.
+You may also scroll or tilt your mouse wheel.
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=646 y=354
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=564 y=346
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=504 y=344
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=491 y=311
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=523 y=266
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=627 y=230
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=714 y=244
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=794 y=285
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=820 y=342
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=801 y=346
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=644 y=317
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=594 y=309
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=480 y=239
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=455 y=229
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=455 y=224
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=474 y=215
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=541 y=192
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=607 y=184
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=651 y=184
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=686 y=186
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=711 y=193
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=749 y=224
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=782 y=242
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=798 y=265
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=736 y=202
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=635 y=205
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=635 y=205
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=461 y=209
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=436 y=196
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=426 y=181
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=422 y=170
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=557 y=204
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=636 y=213
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=736 y=228
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=799 y=232
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=809 y=236
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=692 y=420
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=547 y=307
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=498 y=234
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=497 y=228
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=496 y=224
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=502 y=223
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=623 y=228
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons LeftButton RightButton  x=678 y=239
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons RightButton  x=680 y=240
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=723 y=243
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=735 y=243
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=743 y=247
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=743 y=247
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=762 y=281
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=730 y=358
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=681 y=360
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=624 y=360
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=569 y=387
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=545 y=400
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=465 y=406
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=449 y=401
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=432 y=393
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=617 y=470
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=434 y=173
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=584 y=470
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=433 y=298
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=455 y=353
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=443 y=347
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=657 y=281
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=649 y=280
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=684 y=301
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=684 y=301
+
+
+Mouse DoubleClick: raw button=1  Qt=LeftButton
+ heldbuttonsLeftButton 
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=684 y=301
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=684 y=301
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=684 y=301
+
+
+Mouse Press: raw button=2  Qt=RightButton
+ heldbuttons RightButton  x=775 y=368
+
+
+Mouse Release: raw button=2  Qt=RightButton
+ heldbuttons NoButton x=775 y=368
+
+
+Mouse Press: raw button=1  Qt=LeftButton
+ heldbuttons LeftButton  x=772 y=279
+
+
+Mouse Release: raw button=1  Qt=LeftButton
+ heldbuttons NoButton x=772 y=279
