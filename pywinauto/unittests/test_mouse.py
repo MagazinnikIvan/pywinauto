@@ -84,7 +84,7 @@ class MouseTests(unittest.TestCase):
         self.assertTrue("Mouse Release" in data)
         self.assertTrue("RightButton" in data)
 
-    def test_vertical_scrol(self):
+    def test_vertical_scroll(self):
         mouse.scroll((self.__get_pos(50)), 5)
         mouse.scroll((self.__get_pos(50)), -5)
         data = self.__get_text()
