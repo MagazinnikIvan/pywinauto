@@ -1,52 +1,24 @@
 __author__ = 'ivan'
 import sys
-if sys.platform == 'linux':
+import time
+if sys.platform == 'win32':
+    from . import win32functions
+    from . import win32defines
+    from .timings import Timings
+    from . import win32structures
+    import win32api
+
+else:
     from Xlib.display import Display
     from Xlib import X
     from Xlib.ext.xtest import fake_input
 
-if sys.platform == 'win32':
-    from pywinauto import win32functions
-    from pywinauto import win32defines
-    from pywinauto.timings import Timings
-    from pywinauto import win32structures
-
-    import time
-    import win32api
 
 BUTTON_MAPPING = {'left': 1, 'middle': 2, 'right': 3, 'up_scroll': 4,
                   'down_scroll': 5, 'left_scroll': 6, 'right_scroll': 7}
 
 
-if sys.platform == 'linux':
-    _display = Display()
-
-    def _perform_click_input(button='left', coord=(0, 0),
-                             button_down=True, button_up=True, double=False,
-                             wheel_dist=0, pressed="", key_down=True, key_up=True
-                             ):
-        move(coord)
-        if (button == 'wheel'):
-            if wheel_dist == 0:
-                return
-            if wheel_dist > 0:
-                button = 'up_scroll'
-            if wheel_dist < 0:
-                button = 'down_scroll'
-            for i in range(abs(wheel_dist)):
-                _perform_click_input(button, coord)
-            return
-
-        button = BUTTON_MAPPING[button]
-        if button_down:
-            fake_input(_display, X.ButtonPress, button)
-            _display.sync()
-        if button_up:
-            fake_input(_display, X.ButtonRelease, button)
-            _display.sync()
-
-
-elif sys.platform == 'win32':
+if sys.platform == 'win32':
     def _perform_click_input(
         button="left",
         coords=(None, None),
@@ -164,38 +136,75 @@ elif sys.platform == 'win32':
             SendKeys.VirtualKeyAction(SendKeys.VK_MENU, down=False).Run()
 
 
-def click(coord=(0, 0)):
-    _perform_click_input(button='left', coords=coord, button_down=True, button_up=True)
+else:
+    _display = Display()
+    def _perform_click_input(button='left', coords=(0, 0),
+                             button_down=True, button_up=True, double=False,
+                             wheel_dist=0, pressed="", key_down=True, key_up=True):
+        _move(coords)
+        if button == 'wheel':
+            if wheel_dist == 0:
+                return
+            if wheel_dist > 0:
+                button = 'up_scroll'
+            if wheel_dist < 0:
+                button = 'down_scroll'
+            for i in range(abs(wheel_dist)):
+                _perform_click_input(button, coords)
+        else:
+            button = BUTTON_MAPPING[button]
+            if button_down:
+                fake_input(_display, X.ButtonPress, button)
+                _display.sync()
+            if button_up:
+                fake_input(_display, X.ButtonRelease, button)
+                _display.sync()
 
 
-def double_click(coord=(0, 0)):
-    _perform_click_input(button='left', coords=coord)
-    _perform_click_input(button='left', coords=coord)
+def click(button='left',coords=(0, 0)):
+    "Click at the specified coordinates"
+    _perform_click_input(button=button, coords=coords)
 
 
-def right_click(coord=(0, 0)):
-    _perform_click_input(button='right', coords=coord)
+def double_click(button='left',coords=(0, 0)):
+    "Double click at the specified coordinates"
+    _perform_click_input(button=button, coords=coords)
+    _perform_click_input(button=button, coords=coords)
 
 
-def move(coords=(0, 0)):
+def right_click(coords=(0, 0)):
+    "Right click at the specified coords"
+    _perform_click_input(button='right', coords=coords)
+
+
+def move (coords=(0,0)):
+    "Move the mouse"
+    _perform_click_input(button='move',coords=coords,button_down=False,button_up=False)
+
+
+def press(button='left',coords=(0, 0)):
+    "Press the mouse button"
+    _perform_click_input(button='left', coords=coords, button_down=True, button_up=False)
+
+
+def release(button='left',coords=(0, 0)):
+    "Release the mouse button"
+    _perform_click_input(button='left', coords=coords, button_down=False, button_up=True)
+
+
+def scroll(coords=(0, 0), wheel_dist=1):
+    "Do mouse wheel"
+    if wheel_dist:
+        _perform_click_input(button='wheel', wheel_dist=wheel_dist, coords=coords)
+
+
+def wheel_click(coords=(0, 0)):
+    "Middle mouse button click at the specified coords"
+    _perform_click_input(button='middle', coords=coords)
+
+
+def _move(coords=(0, 0)):
     x = int(coords[0])
     y = int(coords[1])
     fake_input(_display, X.MotionNotify, x=x, y=y)
     _display.sync()
-
-
-def press(coord=(0, 0)):
-    _perform_click_input(button='left', coords=coord, button_down=True, button_up=False)
-
-
-def release(coord=(0, 0)):
-    _perform_click_input(button='left', coords=coord, button_down=False, button_up=True)
-
-
-def scroll(coord=(0, 0), wheel_dist=1):
-    if wheel_dist:
-        _perform_click_input(button='wheel', wheel_dist=wheel_dist, coords=coord, pressed='pressed')
-
-
-def wheel_click(coord=(0, 0)):
-    _perform_click_input(button='middle', coords=coord)

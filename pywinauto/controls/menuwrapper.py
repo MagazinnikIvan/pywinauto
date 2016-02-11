@@ -39,6 +39,7 @@ from .. import win32functions
 from .. import win32defines
 from .. import findbestmatch
 from .. import six
+from .. import mouse
 from ..RemoteMemoryBlock import RemoteMemoryBlock
 from ..timings import Timings
 
@@ -245,9 +246,7 @@ class MenuItem(object):
         x_pt = int(float(rect.left + rect.right) / 2.)
         y_pt = int(float(rect.top + rect.bottom) / 2.)
 
-        from .. import mouse
-#        from ..mouse import _perform_click_inpu
-        mouse.click(coord = (x_pt, y_pt))
+        mouse.click(coords = (x_pt, y_pt))
 
         win32functions.WaitGuiThreadIdle(self.ctrl)
         time.sleep(Timings.after_menu_wait)

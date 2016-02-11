@@ -11,28 +11,24 @@ import win32clipboard
 import unittest
 from pywinauto.application import Application
 from pywinauto.SendKeysCtypes import SendKeys
-sys.path.append(os.path.split
-                (os.path.dirname
-                 (os.path.abspath(__file__)))[0])
-import mouse
+from pywinauto import mouse
 
 
 def _test_app():
-    test_folder = os.path.join(os.path.split
-                               (os.path.split
+    test_folder = os.path.join(os.path.dirname
+                               (os.path.dirname
                                 (os.path.dirname
-                                 (os.path.abspath(__file__)))[0])[0],
+                                 (os.path.abspath(__file__)))),
                                r"apps/MouseTester")
-    if sys.platform == 'linux':
-        return os.path.join(test_folder, "mousebuttons")
-    elif sys.platform == 'win32':
+    if sys.platform == 'win32':
         return os.path.join(test_folder, "mousebuttons.exe")
+    else:
+        return os.path.join(test_folder, "mousebuttons")
 
 
 class MouseTests(unittest.TestCase):
 
     def setUp(self):
-        #self.app = subprocess.Popen(_test_app())
         self.app = Application()
         self.app.start(_test_app())
         self.dlg = self.app.mousebuttons
@@ -54,52 +50,53 @@ class MouseTests(unittest.TestCase):
         return data
 
     def test_position(self):
-        left, top = self.__get_pos(50)
-        mouse.click((left, top))
+        left, top = self.__get_pos(60)
+        mouse.click(coords=(left, top))
         data = self.__get_text()
-        self.assertNotEqual(data.find(str(top)), -1)
-        self.assertNotEqual(data.find(str(left)), -1)
+        self.assertTrue(str(top) in data)
+        self.assertTrue(str(left) in data)
 
     def test_click(self):
-        mouse.click((self.__get_pos(50)))
+        mouse.click(coords=(self.__get_pos(50)))
         data = self.__get_text()
-        self.assertNotEqual(data.find("LeftButton"),
-                            data.rfind("LeftButton"))
-        self.assertNotEqual(data.find("Mouse Press"), -1)
-        self.assertNotEqual(data.find("Mouse Release"), -1)
+        self.assertTrue("LeftButton" in data)
+        self.assertTrue("Mouse Press" in data)
+        self.assertTrue("Mouse Release" in data)
 
     def test_double_click(self):
-        mouse.double_click((self.__get_pos(50)))
+        mouse.double_click(coords=(self.__get_pos(50)))
         data = self.__get_text()
-        self.assertNotEqual(data.find("Mouse DoubleClick"), -1)
+        self.assertTrue("Mouse DoubleClick" in data)
 
-    def test_pres_release(self):
+    def test_press_release(self):
         left, top = self.__get_pos(50)
         left1, top1 = self.__get_pos(20)
-        mouse.press((left, top))
-        mouse.release((left1, top1))
+        mouse.press(coords=(left, top))
+        mouse.release(coords=(left1, top1))
         data = self.__get_text()
-        self.assertNotEqual(data.find(str(top)), data.find(str(top1)))
-        self.assertNotEqual(data.find(str(left)), data.find(str(left1)))
+        self.assertEqual(str(top) in data, str(top1) in data)
+        self.assertEqual(str(left) in data, str(left1) in data)
 
     def test_right_click(self):
         mouse.right_click((self.__get_pos(50)))
         data = self.__get_text()
-        self.assertNotEqual(data.find("RightButton"),
-                            data.rfind("RightButton"))
+        self.assertTrue("Mouse Press" in data)
+        self.assertTrue("Mouse Release" in data)
+        self.assertTrue("RightButton" in data)
 
     def test_vertical_scrol(self):
-        mouse.scroll((self.__get_pos(50)),5)
-        mouse.scroll((self.__get_pos(50)),-5)
+        mouse.scroll((self.__get_pos(50)), 5)
+        mouse.scroll((self.__get_pos(50)), -5)
         data = self.__get_text()
-        self.assertNotEqual(data.find("UP"), -1)
-        self.assertNotEqual(data.find("DOWN"), -1)
+        self.assertTrue("UP" in data)
+        self.assertTrue("DOWN" in data)
 
     def test_wheel_click(self):
         mouse.wheel_click((self.__get_pos(50)))
         data = self.__get_text()
-        self.assertNotEqual(data.find("MiddleButton"),
-                            data.rfind("MiddleButton"))
+        self.assertTrue("Mouse Press" in data)
+        self.assertTrue("Mouse Release" in data)
+        self.assertTrue("MiddleButton" in data)
 
 if __name__ == "__main__":
     unittest.main()
