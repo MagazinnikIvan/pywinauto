@@ -28,6 +28,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+"Cross-platform module to emulate mouse events like a real user"
+
 import sys
 import time
 if sys.platform == 'win32':
@@ -36,7 +38,6 @@ if sys.platform == 'win32':
     from .timings import Timings
     from . import win32structures
     import win32api
-
 else:
     from Xlib.display import Display
     from Xlib import X
@@ -59,7 +60,7 @@ if sys.platform == 'win32':
         key_down=True,
         key_up=True,
     ):
-        """Peform a click action using SendInput
+        """Perform a click action using SendInput
 
         All the *ClickInput() and *MouseInput() methods use this function.
 
@@ -170,7 +171,13 @@ else:
     def _perform_click_input(button='left', coords=(0, 0),
                              button_down=True, button_up=True, double=False,
                              wheel_dist=0, pressed="", key_down=True, key_up=True):
-        _move(coords)
+        "Perform a click action using Python-xlib"
+        #Move mouse
+        x = int(coords[0])
+        y = int(coords[1])
+        fake_input(_display, X.MotionNotify, x=x, y=y)
+        _display.sync()
+
         if button == 'wheel':
             if wheel_dist == 0:
                 return
@@ -190,12 +197,12 @@ else:
                 _display.sync()
 
 
-def click(button='left',coords=(0, 0)):
+def click(button='left', coords=(0, 0)):
     "Click at the specified coordinates"
     _perform_click_input(button=button, coords=coords)
 
 
-def double_click(button='left',coords=(0, 0)):
+def double_click(button='left', coords=(0, 0)):
     "Double click at the specified coordinates"
     _perform_click_input(button=button, coords=coords)
     _perform_click_input(button=button, coords=coords)
@@ -206,19 +213,19 @@ def right_click(coords=(0, 0)):
     _perform_click_input(button='right', coords=coords)
 
 
-def move(coords=(0,0)):
+def move(coords=(0, 0)):
     "Move the mouse"
     _perform_click_input(button='move',coords=coords,button_down=False,button_up=False)
 
 
-def press(button='left',coords=(0, 0)):
+def press(button='left', coords=(0, 0)):
     "Press the mouse button"
-    _perform_click_input(button='left', coords=coords, button_down=True, button_up=False)
+    _perform_click_input(button=button, coords=coords, button_down=True, button_up=False)
 
 
-def release(button='left',coords=(0, 0)):
+def release(button='left', coords=(0, 0)):
     "Release the mouse button"
-    _perform_click_input(button='left', coords=coords, button_down=False, button_up=True)
+    _perform_click_input(button=button, coords=coords, button_down=False, button_up=True)
 
 
 def scroll(coords=(0, 0), wheel_dist=1):
@@ -230,10 +237,3 @@ def scroll(coords=(0, 0), wheel_dist=1):
 def wheel_click(coords=(0, 0)):
     "Middle mouse button click at the specified coords"
     _perform_click_input(button='middle', coords=coords)
-
-
-def _move(coords=(0, 0)):
-    x = int(coords[0])
-    y = int(coords[1])
-    fake_input(_display, X.MotionNotify, x=x, y=y)
-    _display.sync()
