@@ -10,17 +10,6 @@ __all__ = ['KeySequenceError', 'SendKeys']
 
 DEBUG = 0
 
-INPUT_KEYBOARD = 1
-KEYEVENTF_EXTENDEDKEY = 1
-KEYEVENTF_KEYUP       = 2
-KEYEVENTF_UNICODE     = 4
-KEYEVENTF_SCANCODE    = 8
-VK_SHIFT        = _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Shift_L'))
-VK_CONTROL      = _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Control_L'))
-VK_MENU         = _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Menu'))
-
-# 'codes' recognized as {CODE( repeat)?}
-
 spec_keysyms = {
     ' ' : "space",
     '\t' : "Tab",
@@ -61,163 +50,179 @@ spec_keysyms = {
     '~' : "asciitilde"
 }
 
+def _to_keycode(key):
+    """return python X11 keycode of symbol"""
+    return _display.keysym_to_keycode(Xlib.XK.string_to_keysym(key))
+
+INPUT_KEYBOARD = 1
+KEYEVENTF_EXTENDEDKEY = 1
+KEYEVENTF_KEYUP       = 2
+KEYEVENTF_UNICODE     = 4
+KEYEVENTF_SCANCODE    = 8
+VK_SHIFT        = _to_keycode(('Shift_L'))
+VK_CONTROL      = _to_keycode(('Control_L'))
+VK_MENU         = _to_keycode(('Menu'))
+
+# 'codes' recognized as {CODE( repeat)?}
+
+
 CODES = {
-    'BACK':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('BackSpace')),
-    'BACKSPACE': _display.keysym_to_keycode(Xlib.XK.string_to_keysym('BackSpace')),
-    'BKSP':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('BackSpace')),
-    'BREAK':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Break')),
-    'BS':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('BackSpace')),
-    'CAP':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Caps_Lock')),
-    'CAPSLOCK': _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Caps_Lock')),
-    'DEL':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Delete')),
-    'DELETE':   _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Delete')),
-    'DOWN':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Down')),
-    'END':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('End')),
-    'ENTER':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Return')),
-    'ESC':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Escape')),
-    'F1':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F1')),
-    'F2':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F2')),
-    'F3':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F3')),
-    'F4':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F4')),
-    'F5':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F5')),
-    'F6':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F6')),
-    'F7':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F7')),
-    'F8':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F8')),
-    'F9':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F9')),
-    'F10':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F10')),
-    'F11':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F11')),
-    'F12':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F12')),
-    'F13':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F13')),
-    'F14':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F14')),
-    'F15':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F15')),
-    'F16':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F16')),
-    'F17':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F17')),
-    'F18':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F18')),
-    'F19':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F19')),
-    'F20':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F20')),
-    'F21':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F21')),
-    'F22':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F22')),
-    'F23':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F23')),
-    'F24':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F24')),
-    'HELP':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Help')),
-    'HOME':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Home')),
-    'INS':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Insert')),
-    'INSERT':   _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Insert')),
-    'LEFT':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Left')),
-    'LWIN':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Super_L')),
-    'NUMLOCK':  _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Num_Lock')),
-    'PGDN':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Page_Down')),
-    'PGUP':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Page_Up')),
-    'PRTSC':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Print')),
-    'RIGHT':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Right')),
-    'RMENU':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Alt_R')),
-    'RWIN':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Super_R')),
-    'SCROLLLOCK': _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Scroll_Lock')),
-    'SPACE':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('space')),
-    'TAB':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Tab')),
-    'UP':        _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Up')),
+    'BACK':     _to_keycode(('BackSpace')),
+    'BACKSPACE': _to_keycode(('BackSpace')),
+    'BKSP':     _to_keycode(('BackSpace')),
+    'BREAK':    _to_keycode(('Break')),
+    'BS':       _to_keycode(('BackSpace')),
+    'CAP':      _to_keycode(('Caps_Lock')),
+    'CAPSLOCK': _to_keycode(('Caps_Lock')),
+    'DEL':      _to_keycode(('Delete')),
+    'DELETE':   _to_keycode(('Delete')),
+    'DOWN':     _to_keycode(('Down')),
+    'END':      _to_keycode(('End')),
+    'ENTER':    _to_keycode(('Return')),
+    'ESC':      _to_keycode(('Escape')),
+    'F1':       _to_keycode(('F1')),
+    'F2':       _to_keycode(('F2')),
+    'F3':       _to_keycode(('F3')),
+    'F4':       _to_keycode(('F4')),
+    'F5':       _to_keycode(('F5')),
+    'F6':       _to_keycode(('F6')),
+    'F7':       _to_keycode(('F7')),
+    'F8':       _to_keycode(('F8')),
+    'F9':       _to_keycode(('F9')),
+    'F10':      _to_keycode(('F10')),
+    'F11':      _to_keycode(('F11')),
+    'F12':      _to_keycode(('F12')),
+    'F13':      _to_keycode(('F13')),
+    'F14':      _to_keycode(('F14')),
+    'F15':      _to_keycode(('F15')),
+    'F16':      _to_keycode(('F16')),
+    'F17':      _to_keycode(('F17')),
+    'F18':      _to_keycode(('F18')),
+    'F19':      _to_keycode(('F19')),
+    'F20':      _to_keycode(('F20')),
+    'F21':      _to_keycode(('F21')),
+    'F22':      _to_keycode(('F22')),
+    'F23':      _to_keycode(('F23')),
+    'F24':      _to_keycode(('F24')),
+    'HELP':     _to_keycode(('Help')),
+    'HOME':     _to_keycode(('Home')),
+    'INS':      _to_keycode(('Insert')),
+    'INSERT':   _to_keycode(('Insert')),
+    'LEFT':     _to_keycode(('Left')),
+    'LWIN':     _to_keycode(('Super_L')),
+    'NUMLOCK':  _to_keycode(('Num_Lock')),
+    'PGDN':     _to_keycode(('Page_Down')),
+    'PGUP':     _to_keycode(('Page_Up')),
+    'PRTSC':    _to_keycode(('Print')),
+    'RIGHT':    _to_keycode(('Right')),
+    'RMENU':    _to_keycode(('Alt_R')),
+    'RWIN':     _to_keycode(('Super_R')),
+    'SCROLLLOCK': _to_keycode(('Scroll_Lock')),
+    'SPACE':     _to_keycode(('space')),
+    'TAB':       _to_keycode(('Tab')),
+    'UP':        _to_keycode(('Up')),
 
     'VK_ACCEPT': 30,
     'VK_ADD':    107,
     'VK_APPS':    93,
     'VK_ATTN':    246,
-    'VK_BACK':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('BackSpace')),
-    'VK_CANCEL':  _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Break')),
-    'VK_CAPITAL': _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Caps_Lock')),
+    'VK_BACK':    _to_keycode(('BackSpace')),
+    'VK_CANCEL':  _to_keycode(('Break')),
+    'VK_CAPITAL': _to_keycode(('Caps_Lock')),
     'VK_CLEAR':   12,
-    'VK_CONTROL': _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Control_L')),
+    'VK_CONTROL': _to_keycode(('Control_L')),
     'VK_CONVERT': 28,
     'VK_CRSEL':   247,
     'VK_DECIMAL': 110,
-    'VK_DELETE':  _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Delete')),
+    'VK_DELETE':  _to_keycode(('Delete')),
     'VK_DIVIDE':  111,
-    'VK_DOWN':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Down')),
-    'VK_END':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('End')),
+    'VK_DOWN':    _to_keycode(('Down')),
+    'VK_END':     _to_keycode(('End')),
     'VK_EREOF':   249,
-    'VK_ESCAPE':  _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Escape')),
+    'VK_ESCAPE':  _to_keycode(('Escape')),
     'VK_EXECUTE': 43,
     'VK_EXSEL':   248,
-    'VK_F1':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F1')),
-    'VK_F2':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F2')),
-    'VK_F3':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F3')),
-    'VK_F4':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F4')),
-    'VK_F5':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F5')),
-    'VK_F6':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F6')),
-    'VK_F7':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F7')),
-    'VK_F8':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F8')),
-    'VK_F9':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F9')),
-    'VK_F10':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F10')),
-    'VK_F11':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F11')),
-    'VK_F12':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F12')),
-    'VK_F13':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F13')),
-    'VK_F14':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F14')),
-    'VK_F15':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F15')),
-    'VK_F16':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F16')),
-    'VK_F17':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F17')),
-    'VK_F18':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F18')),
-    'VK_F19':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F19')),
-    'VK_F20':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F20')),
-    'VK_F21':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F21')),
-    'VK_F22':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F22')),
-    'VK_F23':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F23')),
-    'VK_F24':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('F24')),
+    'VK_F1':       _to_keycode(('F1')),
+    'VK_F2':       _to_keycode(('F2')),
+    'VK_F3':       _to_keycode(('F3')),
+    'VK_F4':       _to_keycode(('F4')),
+    'VK_F5':       _to_keycode(('F5')),
+    'VK_F6':       _to_keycode(('F6')),
+    'VK_F7':       _to_keycode(('F7')),
+    'VK_F8':       _to_keycode(('F8')),
+    'VK_F9':       _to_keycode(('F9')),
+    'VK_F10':      _to_keycode(('F10')),
+    'VK_F11':      _to_keycode(('F11')),
+    'VK_F12':      _to_keycode(('F12')),
+    'VK_F13':      _to_keycode(('F13')),
+    'VK_F14':      _to_keycode(('F14')),
+    'VK_F15':      _to_keycode(('F15')),
+    'VK_F16':      _to_keycode(('F16')),
+    'VK_F17':      _to_keycode(('F17')),
+    'VK_F18':      _to_keycode(('F18')),
+    'VK_F19':      _to_keycode(('F19')),
+    'VK_F20':      _to_keycode(('F20')),
+    'VK_F21':      _to_keycode(('F21')),
+    'VK_F22':      _to_keycode(('F22')),
+    'VK_F23':      _to_keycode(('F23')),
+    'VK_F24':      _to_keycode(('F24')),
     'VK_FINAL':   24,
     'VK_HANGEUL':  21,
     'VK_HANGUL':   21,
     'VK_HANJA':    25,
-    'VK_HELP':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Help')),
-    'VK_HOME':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Home')),
-    'VK_INSERT':   _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Insert')),
+    'VK_HELP':     _to_keycode(('Help')),
+    'VK_HOME':     _to_keycode(('Home')),
+    'VK_INSERT':   _to_keycode(('Insert')),
     'VK_JUNJA':    23,
     'VK_KANA':     21,
     'VK_KANJI':    25,
     'VK_LBUTTON':   1,
-    'VK_LCONTROL': _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Control_L')),
-    'VK_LEFT':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Left')),
-    'VK_LMENU':   _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Alt_L')),
-    'VK_LSHIFT':  _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Shift_L')),
-    'VK_LWIN':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Super_L')),
+    'VK_LCONTROL': _to_keycode(('Control_L')),
+    'VK_LEFT':     _to_keycode(('Left')),
+    'VK_LMENU':   _to_keycode(('Alt_L')),
+    'VK_LSHIFT':  _to_keycode(('Shift_L')),
+    'VK_LWIN':     _to_keycode(('Super_L')),
     'VK_MBUTTON':    4,
-    'VK_MENU':        _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Alt_L')),
+    'VK_MENU':        _to_keycode(('Alt_L')),
     'VK_MODECHANGE':  31,
     'VK_MULTIPLY':   106,
-    'VK_NEXT':        _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Page_Down')),
+    'VK_NEXT':        _to_keycode(('Page_Down')),
     'VK_NONAME':     252,
     'VK_NONCONVERT':  29,
-    'VK_NUMLOCK':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Num_Lock')),
-    'VK_NUMPAD0':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_0')),
-    'VK_NUMPAD1':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_1')),
-    'VK_NUMPAD2':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_2')),
-    'VK_NUMPAD3':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_3')),
-    'VK_NUMPAD4':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_4')),
-    'VK_NUMPAD5':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_5')),
-    'VK_NUMPAD6':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_6')),
-    'VK_NUMPAD7':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_7')),
-    'VK_NUMPAD8':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_8')),
-    'VK_NUMPAD9':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('KP_9')),
+    'VK_NUMLOCK':    _to_keycode(('Num_Lock')),
+    'VK_NUMPAD0':     _to_keycode(('KP_0')),
+    'VK_NUMPAD1':     _to_keycode(('KP_1')),
+    'VK_NUMPAD2':     _to_keycode(('KP_2')),
+    'VK_NUMPAD3':     _to_keycode(('KP_3')),
+    'VK_NUMPAD4':    _to_keycode(('KP_4')),
+    'VK_NUMPAD5':    _to_keycode(('KP_5')),
+    'VK_NUMPAD6':    _to_keycode(('KP_6')),
+    'VK_NUMPAD7':    _to_keycode(('KP_7')),
+    'VK_NUMPAD8':    _to_keycode(('KP_8')),
+    'VK_NUMPAD9':    _to_keycode(('KP_9')),
     'VK_OEM_CLEAR':  254,
     'VK_PA1':        253,
     'VK_PAUSE':       19,
     'VK_PLAY':       250,
-    'VK_PRINT':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Print')),
-    'VK_PRIOR':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Page_Up')),
+    'VK_PRINT':       _to_keycode(('Print')),
+    'VK_PRIOR':       _to_keycode(('Page_Up')),
     'VK_PROCESSKEY': 229,
     'VK_RBUTTON':      2,
-    'VK_RCONTROL':   _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Control_R')),
-    'VK_RETURN':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Return')),
-    'VK_RIGHT':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Right')),
-    'VK_RMENU':      _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Alt_R')),
-    'VK_RSHIFT':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Shift_R')),
-    'VK_RWIN':        _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Super_R')),
-    'VK_SCROLL':     _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Scroll_Lock')),
+    'VK_RCONTROL':   _to_keycode(('Control_R')),
+    'VK_RETURN':      _to_keycode(('Return')),
+    'VK_RIGHT':       _to_keycode(('Right')),
+    'VK_RMENU':      _to_keycode(('Alt_R')),
+    'VK_RSHIFT':     _to_keycode(('Shift_R')),
+    'VK_RWIN':        _to_keycode(('Super_R')),
+    'VK_SCROLL':     _to_keycode(('Scroll_Lock')),
     'VK_SELECT':      41,
     'VK_SEPARATOR':  108,
-    'VK_SHIFT':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Shift_L')),
-    'VK_SNAPSHOT':    _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Print')),
-    'VK_SPACE':       _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Space')),
+    'VK_SHIFT':       _to_keycode(('Shift_L')),
+    'VK_SNAPSHOT':    _to_keycode(('Print')),
+    'VK_SPACE':       _to_keycode(('Space')),
     'VK_SUBTRACT':   109,
-    'VK_TAB':          _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Tab')),
-    'VK_UP':          _display.keysym_to_keycode(Xlib.XK.string_to_keysym('Up')),
+    'VK_TAB':          _to_keycode(('Tab')),
+    'VK_UP':          _to_keycode(('Up')),
     'ZOOM':          251, #no item in xlib
 }
 
@@ -237,13 +242,15 @@ class KeySequenceError(Exception):
 
 
 class KeyAction(object):
-    """Class that represents a single 'keyboard' action
+    """
+    Class that represents a single 'keyboard' action
 
     It represents either a PAUSE action (not reallly keyboard) or a keyboard
     action (press or release or both) of a particular key.
     """
 
     def __init__(self, key, down = True, up = True):
+        """Init a single key action params"""
         self.key = key
         self.down = down
         self.up = up
@@ -251,20 +258,27 @@ class KeyAction(object):
         self.alt = False
         self.shift = False
 
+    def _key_modifiers(self, ctrl, shift, alt, pressed):
+        """Apply key modifiers"""
+        if pressed:
+            if ctrl:
+                fake_input(_display, X.KeyPress, CODES['VK_CONTROL'])
+            if shift:
+                fake_input(_display, X.KeyPress, CODES['VK_SHIFT'])
+            if alt:
+                fake_input(_display, X.KeyPress, CODES['VK_MENU'])
+        else:
+            if ctrl:
+                fake_input(_display, X.KeyRelease, CODES['VK_CONTROL'])
+            if shift:
+                fake_input(_display, X.KeyRelease, CODES['VK_SHIFT'])
+            if alt:
+                fake_input(_display, X.KeyRelease, CODES['VK_MENU'])
 
     def Run(self):
+        """Do a single 'keybord' action using xlib"""
         is_shifted = False
         if type(self.key) == str:
-            if 'down' in self.key:
-                self.up = False
-                self.down = True
-                self.key = self.key.split(' ')[0]
-            if 'down' in self.key:
-                self.up = True
-                self.down = False
-                self.key = self.key.split(' ')[0]
-            if 'KEsc' in self.key:
-                self.key = self.key.split(' ')[0]
             key = self.key
             self.key = Xlib.XK.string_to_keysym(self.key)
             if self.key == 0:
@@ -274,32 +288,15 @@ class KeyAction(object):
                 print("No button found")
                 return
             is_shifted = key.isupper() or key in '~!@#$%^&*()_+{}|:"<>?'
-        if is_shifted or self.shift:
-            print ("Shifted true")
-            fake_input(_display, X.KeyPress, CODES['VK_SHIFT'])
-        if self.ctrl:
-            print ("Control true")
-            fake_input(_display, X.KeyPress, CODES['VK_CONTROL'])
-        if self.alt:
-            print ("Alt true")
-            fake_input(_display, X.KeyPress, CODES['VK_MENU'])
+
+        self._key_modifiers(self.ctrl, (self.shift or is_shifted), self.alt, pressed=True)
         if self.up:
-            print ("click down",self.key)
-            fake_input(_display,X.KeyPress,self.key)
+            fake_input(_display, X.KeyPress, self.key)
             _display.sync()
         if self.down:
-            print ("click up",self.key)
-            fake_input(_display,X.KeyRelease,self.key)
+            fake_input(_display, X.KeyRelease, self.key)
             _display.sync()
-        if is_shifted or self.shift:
-            print ("Shifted false")
-            fake_input(_display, X.KeyRelease, CODES['VK_SHIFT'])
-        if self.ctrl:
-            print ("Control false")
-            fake_input(_display, X.KeyRelease, CODES['VK_CONTROL'])
-        if self.alt:
-            print ("Alt true")
-            fake_input(_display, X.KeyRelease, CODES['VK_MENU'])
+        self._key_modifiers(self.ctrl, (self.shift or is_shifted), self.alt, pressed=False)
         _display.sync()
 
 
@@ -319,11 +316,12 @@ class KeyAction(object):
         return down_up
 
     def key_description(self):
-        # "Return a description of the key"
+        """Return a description of the key"""
         desc = "%s"% self.key
         return desc
 
     def __str__(self):
+        """Return key with modifiers as a string"""
         parts = []
         parts.append(self.key_description())
         up_down = self._get_down_up_string()
@@ -334,13 +332,13 @@ class KeyAction(object):
     __repr__ = __str__
 
 class PauseAction(KeyAction):
-    "Represents a pause action"
+    """Represents a pause action"""
 
     def __init__(self, how_long):
         self.how_long = how_long
 
     def Run(self):
-        "Pause for the lenght of time specified"
+        """Pause for the lenght of time specified"""
         time.sleep(self.how_long)
 
     def __str__(self):
@@ -349,8 +347,7 @@ class PauseAction(KeyAction):
 
 
 def handle_code(code):
-    "Handle a key or sequence of keys in braces"
-
+    """Handle a key or sequence of keys in braces"""
     code_keys = []
     # it is a known code (e.g. {DOWN}, {ENTER}, etc)
     if code in CODES:
@@ -401,7 +398,7 @@ def parse_keys(string,
                 with_tabs = False,
                 with_newlines = False,
                 modifiers = None):
-    "Return the parsed keys"
+    """Return the parsed keys"""
 
     keys = []
     if not modifiers:
@@ -494,7 +491,7 @@ def SendKeys(keys,
              with_tabs=False,
              with_newlines=False,
              turn_off_numlock=True):
-    "Parse the keys and type them"
+    """Parse the keys and type them"""
     keys = parse_keys(keys, with_spaces, with_tabs, with_newlines)
     for k in keys:
         print(k)
@@ -503,7 +500,7 @@ def SendKeys(keys,
 
 
 def main(): #pragma: no cover
-    "Send some test strings"
+    """Send some test strings"""
 
     actions = """
         {LWIN}
