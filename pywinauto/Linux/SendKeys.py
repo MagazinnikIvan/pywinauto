@@ -258,22 +258,14 @@ class KeyAction(object):
         self.alt = False
         self.shift = False
 
-    def _key_modifiers(self, ctrl, shift, alt, pressed):
+    def _key_modifiers(self, ctrl, shift, alt, action = X.KeyPress):
         """Apply key modifiers"""
-        if pressed:
-            if ctrl:
-                fake_input(_display, X.KeyPress, CODES['VK_CONTROL'])
-            if shift:
-                fake_input(_display, X.KeyPress, CODES['VK_SHIFT'])
-            if alt:
-                fake_input(_display, X.KeyPress, CODES['VK_MENU'])
-        else:
-            if ctrl:
-                fake_input(_display, X.KeyRelease, CODES['VK_CONTROL'])
-            if shift:
-                fake_input(_display, X.KeyRelease, CODES['VK_SHIFT'])
-            if alt:
-                fake_input(_display, X.KeyRelease, CODES['VK_MENU'])
+        if ctrl:
+            fake_input(_display, action, CODES['VK_CONTROL'])
+        if shift:
+            fake_input(_display, action, CODES['VK_SHIFT'])
+        if alt:
+            fake_input(_display, action, CODES['VK_MENU'])
 
     def Run(self):
         """Do a single 'keybord' action using xlib"""
@@ -289,14 +281,16 @@ class KeyAction(object):
                 return
             is_shifted = key.isupper() or key in '~!@#$%^&*()_+{}|:"<>?'
 
-        self._key_modifiers(self.ctrl, (self.shift or is_shifted), self.alt, pressed=True)
+        self._key_modifiers(self.ctrl, (self.shift or is_shifted), 
+                            self.alt, action = X.KeyPress)
         if self.up:
             fake_input(_display, X.KeyPress, self.key)
             _display.sync()
         if self.down:
             fake_input(_display, X.KeyRelease, self.key)
             _display.sync()
-        self._key_modifiers(self.ctrl, (self.shift or is_shifted), self.alt, pressed=False)
+        self._key_modifiers(self.ctrl, (self.shift or is_shifted), 
+                            self.alt, action = X.KeyRelease)
         _display.sync()
 
 
