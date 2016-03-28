@@ -281,7 +281,7 @@ class KeyAction(object):
                 return
             is_shifted = key.isupper() or key in '~!@#$%^&*()_+{}|:"<>?'
 
-        self._key_modifiers(self.ctrl, (self.shift or is_shifted), 
+        self._key_modifiers(self.ctrl, (self.shift or is_shifted),
                             self.alt, action = X.KeyPress)
         if self.up:
             fake_input(_display, X.KeyPress, self.key)
@@ -289,7 +289,7 @@ class KeyAction(object):
         if self.down:
             fake_input(_display, X.KeyRelease, self.key)
             _display.sync()
-        self._key_modifiers(self.ctrl, (self.shift or is_shifted), 
+        self._key_modifiers(self.ctrl, (self.shift or is_shifted),
                             self.alt, action = X.KeyRelease)
         _display.sync()
 
@@ -455,7 +455,6 @@ def parse_keys(string,
                 keys.append(KeyAction(CODES["ENTER"]))
 
             elif modifiers:
-                print (modifiers)
                 keys.append(KeyAction(c))
 
             else:
@@ -488,7 +487,6 @@ def SendKeys(keys,
     """Parse the keys and type them"""
     keys = parse_keys(keys, with_spaces, with_tabs, with_newlines)
     for k in keys:
-        print(k)
         k.Run()
         time.sleep(pause)
 
@@ -512,7 +510,6 @@ def main(): #pragma: no cover
 
     keys = parse_keys(actions)
     for k in keys:
-        print(k)
         k.Run()
         time.sleep(.1)
 
