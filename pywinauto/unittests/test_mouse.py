@@ -1,6 +1,7 @@
 "Test for mouse.py"
 
 import time
+import copy
 import ctypes
 import locale
 import subprocess
@@ -125,6 +126,18 @@ class MouseTests(unittest.TestCase):
         self.assertTrue("Mouse Press" in data)
         self.assertTrue("Mouse Release" in data)
         self.assertTrue("MiddleButton" in data)
+    if sys.platform != 'win32':
+        def test_swapped_buttons(self):
+            current_map = self.display.get_pointer_mapping()
+            swapped_map = copy.copy(current_map)
+            swapped_map[0], swapped_map[2] = swapped_map[2], swapped_map[0]
+            self.display.set_pointer_mapping(swapped_map)
+            mouse.right_click((self.__get_pos(50)))
+            data = self.__get_text()
+            try:
+                self.assertTrue("RightButton" in data)
+            finally:
+                self.display.set_pointer_mapping(current_map)
 
 if __name__ == "__main__":
     unittest.main()
