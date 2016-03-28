@@ -3,15 +3,24 @@
 import time
 import ctypes
 import locale
-import re
 import subprocess
+import re
 import sys
 import os
-import win32clipboard
 import unittest
-from pywinauto.application import Application
-from pywinauto.SendKeysCtypes import SendKeys
-from pywinauto import mouse
+if sys.platform == 'win32':
+    import win32clipboard
+    from pywinauto.application import Application
+    from pywinauto.SendKeysCtypes import SendKeys
+    from pywinauto import mouse
+else:
+    from Xlib.display import Display
+    parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, parent_dir)
+    import mouse
+    send_keys_dir = os.path.join(parent_dir, r"Linux/")
+    sys.path.insert(0, send_keys_dir)
+    from SendKeys import SendKeys
 
 
 def _test_app():
@@ -29,24 +38,43 @@ def _test_app():
 class MouseTests(unittest.TestCase):
 
     def setUp(self):
-        self.app = Application()
-        self.app.start(_test_app())
-        self.dlg = self.app.mousebuttons
+        if sys.platform == 'win32':
+            self.app = Application()
+            self.app.start(_test_app())
+            self.dlg = self.app.mousebuttons
+        else:
+            self.display = Display()
+            self.app = subprocess.Popen(_test_app(), shell=True)
+            time.sleep(1)
 
     def tearDown(self):
         time.sleep(1)
-        self.app.kill_()
+        if sys.platform == 'win32':
+            self.app.kill_()
+        else:
+            self.app.kill()
 
     def __get_pos(self, shift):
-        rect = self.dlg.Rectangle()
-        return rect.left + shift, rect.top + shift
+        if sys.platform == 'win32':
+            rect = self.dlg.Rectangle()
+            return rect.left + shift, rect.top + shift
+        else:
+            root = self.display.screen().root
+            left_pos = root.get_geometry().width / 2
+            top_pos = root.get_geometry().height / 2
+            return 300+shift, 300+shift
 
     def __get_text(self):
+        # this function will be change after clipboard.py changes
+        data = ''
         SendKeys('^a')
         SendKeys('^c')
-        win32clipboard.OpenClipboard()
-        data = win32clipboard.GetClipboardData()
-        win32clipboard.CloseClipboard()
+        if sys.platform == 'win32':
+            win32clipboard.OpenClipboard()
+            data = win32clipboard.GetClipboardData()
+            win32clipboard.CloseClipboard()
+        else:
+            pass
         return data
 
     def test_position(self):

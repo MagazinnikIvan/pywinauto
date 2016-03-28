@@ -31,20 +31,29 @@ import sys
 import os
 import locale
 import unittest
+import subprocess
+import time
 sys.path.append(".")
-from pywinauto.SendKeysCtypes import SendKeys, DEBUG, KeySequenceError
-from pywinauto.SendKeysCtypes import KeyAction, VirtualKeyAction, PauseAction
-from pywinauto import six
-from pywinauto.sysinfo import is_x64_Python, is_x64_OS
-from pywinauto.application import Application
-from pywinauto.actionlogger import ActionLogger
-from pywinauto import backend
+if sys.platform == 'win32':
+    from pywinauto.SendKeysCtypes import SendKeys, DEBUG, KeySequenceError
+    from pywinauto.SendKeysCtypes import KeyAction, VirtualKeyAction, PauseAction
+    from pywinauto import six
+    from pywinauto.sysinfo import is_x64_Python, is_x64_OS
+    from pywinauto.application import Application
+    from pywinauto.actionlogger import ActionLogger
+    from pywinauto import backend
+else:
+    parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    send_keys_dir = os.path.join(parent_dir, r"Linux/")
+    sys.path.insert(0, send_keys_dir)
+    from SendKeys import SendKeys
 
-
-mfc_samples_folder = os.path.join(
-   os.path.dirname(__file__), r"..\..\apps\MFC_samples")
-if is_x64_Python():
-    mfc_samples_folder = os.path.join(mfc_samples_folder, 'x64')
+def mfc_samples():
+    mfc_samples_folder = os.path.join(
+       os.path.dirname(__file__), r"..\..\apps\MFC_samples")
+    if is_x64_Python():
+        mfc_samples_folder = os.path.join(mfc_samples_folder, 'x64')
+    return mfc_samples_folder
 
 def _notepad_exe():
     if is_x64_Python() or not is_x64_OS():
@@ -52,6 +61,16 @@ def _notepad_exe():
     else:
         return r"C:\Windows\SysWOW64\notepad.exe"
 
+def _test_app():
+    test_folder = os.path.join(os.path.dirname
+                               (os.path.dirname
+                                (os.path.dirname
+                                 (os.path.abspath(__file__)))),
+                               r"apps/SendKeysTester")
+    if sys.platform == 'win32':
+        return os.path.join(test_folder, "mousebuttons.exe")
+    else:
+        return os.path.join(test_folder, "send_keys_test_app")
 
 class SendKeysTests(unittest.TestCase):
     "Unit tests for the Sendkeys module"
@@ -59,28 +78,44 @@ class SendKeysTests(unittest.TestCase):
     def setUp(self):
         """Start the application set some data and ensure the application
         is in the state we want it."""
-        backend.activate("native")
-        self.app = Application()
-        self.app.start(_notepad_exe())
-        
-        self.dlg = self.app.UntitledNotepad
-        self.ctrl = self.dlg.Edit
+        if sys.platform == 'win32':
+            backend.activate("native")
+            self.app = Application()
+            self.app.start(_notepad_exe())
+
+            self.dlg = self.app.UntitledNotepad
+            self.ctrl = self.dlg.Edit
+        else:
+            self.app = subprocess.Popen(_test_app(), shell=True)
+            time.sleep(1)
 
     def tearDown(self):
         "Close the application after tests"
-        try:
-            self.dlg.Close(0.1)
-        except Exception: # TimeoutError:
+        if sys.platform == 'win32':
+            try:
+                self.dlg.Close(0.1)
+            except Exception: # TimeoutError:
+                pass
+            try:
+                if self.app.Notepad["Do&n't Save"].Exists():
+                    self.app.Notepad["Do&n't Save"].Click()
+                    self.app.Notepad["Do&n't Save"].WaitNot('visible')
+            except Exception: # TimeoutError:
+                pass
+            finally:
+                if self.dlg.Exists(timeout=0.1):
+                    self.app.kill_()
+        else:
+            self.app.kill()
+
+    def receive_text(self):
+        # this function will be change after clipboard.py changes
+        received = ' '
+        if sys.platform == 'win32':
+            received = self.ctrl.TextBlock()
+        else:
             pass
-        try:
-            if self.app.Notepad["Do&n't Save"].Exists():
-                self.app.Notepad["Do&n't Save"].Click()
-                self.app.Notepad["Do&n't Save"].WaitNot('visible')
-        except Exception: # TimeoutError:
-            pass
-        finally:
-            if self.dlg.Exists(timeout=0.1):
-                self.app.kill_()
+        return received
 
     def __run_NormalCharacters_with_options(self, **args):
         "Make sure that sending any character in range "
@@ -93,7 +128,7 @@ class SendKeysTests(unittest.TestCase):
                 continue
 
             SendKeys(chr(i), pause = .001, **args)
-            received = self.ctrl.TextBlock()[-1]
+            received = self.receive_text()[-1]
 
             self.assertEquals(i, ord(received))
 
@@ -106,16 +141,17 @@ class SendKeysTests(unittest.TestCase):
         "Make sure that with spaces option works"
         self.__run_NormalCharacters_with_options(with_spaces = False)
 
+
     def testSpaceWithSpaces(self):
         "Make sure that with spaces option works"
         SendKeys(" \t \t ", pause = .001, with_spaces = True)
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("   ", received)
 
     def testSpaceWithoutSpaces(self):
         "Make sure that with spaces option works"
         SendKeys(" \t \t ", pause = .001, with_spaces = False)
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("", received)
 
 
@@ -131,20 +167,20 @@ class SendKeysTests(unittest.TestCase):
     def testTabWithTabs(self):
         "Make sure that with spaces option works"
         SendKeys("\t \t \t", pause = .1, with_tabs = True)
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("\t\t\t", received)
 
     def testTabWithoutTabs(self):
         "Make sure that with spaces option works"
         SendKeys("\t a\t b\t", pause = .1, with_tabs = False)
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("ab", received)
 
 
     def testTab(self):
         "Make sure that with spaces option works"
         SendKeys("{TAB}  {TAB} ", pause = .3)
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("\t\t", received)
 
 
@@ -160,13 +196,13 @@ class SendKeysTests(unittest.TestCase):
     def testNewlinesWithNewlines(self):
         "Make sure that with_newlines option works"
         SendKeys("\t \t \t a~\tb\nc", pause = .5, with_newlines = True)
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("a\r\nb\r\nc", received)
 
     def testNewlinesWithoutNewlines(self):
         "Make sure that with_newlines option works"
         SendKeys("\t \t \t\na", pause = .01, with_newlines = False)
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("a", received)
 
 
@@ -175,7 +211,7 @@ class SendKeysTests(unittest.TestCase):
     #    #self.cmd = Application()
     #    #self.cmd.start("cmd.exe", create_new_console=True, wait_for_idle=False)
     #    ActionLogger().log('Preferred encoding: ' + locale.getpreferredencoding())
-    #    
+    #
     #    #os.system("chcp 850")
     #    matched = 0
     #    extended_chars = b"\x81\x82\x83\xa1\xe1\xff"
@@ -186,7 +222,7 @@ class SendKeysTests(unittest.TestCase):
     #        else:
     #            c = char.decode(locale.getpreferredencoding()) #'cp850')
     #        SendKeys(c, pause = .01)
-    #        received = self.ctrl.TextBlock()[-1]
+    #        received = self.receive_text()[-1]
 
     #        if c == received:
     #            matched += 1
@@ -199,7 +235,7 @@ class SendKeysTests(unittest.TestCase):
     def testCharsThatMustBeEscaped(self):
         "Make sure that escaping characters works"
         SendKeys("{%}{^}{+}{(}{)}{{}{}}{~}")
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("%^+(){}~", received)
 
     def testIncorrectCases(self):
@@ -209,12 +245,12 @@ class SendKeysTests(unittest.TestCase):
         self.assertRaises(KeySequenceError, SendKeys, "ENTER)")
         self.assertRaises(RuntimeError, SendKeys, "%{Enterius}")
         self.assertRaises(KeySequenceError, SendKeys, "{PAUSE small}")
-        
+
         try:
             SendKeys("{ENTER five}")
         except KeySequenceError as exc:
             self.assertEquals("invalid repetition count five", str(exc))
-        
+
         try:
             SendKeys("ENTER}")
         except KeySequenceError as exc:
@@ -231,7 +267,7 @@ class SendKeysTests(unittest.TestCase):
     def testRepetition(self):
         "Make sure that repeated action works"
         SendKeys("{TAB 3}{PAUSE 0.5}{F 2}", pause = .3)
-        received = self.ctrl.TextBlock()
+        received = self.receive_text()
         self.assertEquals("\t\t\tFF", received)
 
 
@@ -261,7 +297,7 @@ class SendKeysModifiersTests(unittest.TestCase):
         dlg.Wait('ready')
         dlg.Done.CloseClick()
         dlg.WaitNot('visible')
-        
+
         SendKeys("%(H{LEFT}{UP}{ENTER})", pause = .3)
         dlg = self.app.Window_(title='Sample Dialog with spin controls')
         dlg.Wait('ready')
