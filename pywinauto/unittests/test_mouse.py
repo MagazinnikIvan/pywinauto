@@ -132,9 +132,9 @@ class MouseTests(unittest.TestCase):
             swapped_map = copy.copy(current_map)
             swapped_map[0], swapped_map[2] = swapped_map[2], swapped_map[0]
             self.display.set_pointer_mapping(swapped_map)
-            mouse.right_click((self.__get_pos(50)))
-            data = self.__get_text()
             try:
+                mouse.right_click((self.__get_pos(50)))
+                data = self.__get_text()
                 self.assertTrue("RightButton" in data)
             finally:
                 self.display.set_pointer_mapping(current_map)
