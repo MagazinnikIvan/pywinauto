@@ -46,7 +46,8 @@ else:
     parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     send_keys_dir = os.path.join(parent_dir, r"Linux/")
     sys.path.insert(0, send_keys_dir)
-    from SendKeys import SendKeys
+    from SendKeys import SendKeys, KeySequenceError, KeyAction
+    import clipboard
 
 def mfc_samples():
     mfc_samples_folder = os.path.join(
@@ -67,10 +68,7 @@ def _test_app():
                                 (os.path.dirname
                                  (os.path.abspath(__file__)))),
                                r"apps/SendKeysTester")
-    if sys.platform == 'win32':
-        return os.path.join(test_folder, "mousebuttons.exe")
-    else:
-        return os.path.join(test_folder, "send_keys_test_app")
+    return os.path.join(test_folder, "send_keys_test_app")
 
 class SendKeysTests(unittest.TestCase):
     "Unit tests for the Sendkeys module"
@@ -114,7 +112,12 @@ class SendKeysTests(unittest.TestCase):
         if sys.platform == 'win32':
             received = self.ctrl.TextBlock()
         else:
-            pass
+            SendKeys('^a', pause = .01)
+            SendKeys('^c', pause = .01)
+            SendKeys('{RIGHT}', pause = .001)
+            received = clipboard.get_data()
+        # if not received:
+        #     received = " "
         return received
 
     def __run_NormalCharacters_with_options(self, **args):
@@ -124,7 +127,7 @@ class SendKeysTests(unittest.TestCase):
         for i in range(32, 127):
 
             # skip characters that must be escaped
-            if chr(i) in (' ', '%', '^', '+', '(', ')', '{', '}', '~'):
+            if chr(i) in '~!@#$%^&*()_+{}|:"<>? ':
                 continue
 
             SendKeys(chr(i), pause = .001, **args)
@@ -197,7 +200,7 @@ class SendKeysTests(unittest.TestCase):
         "Make sure that with_newlines option works"
         SendKeys("\t \t \t a~\tb\nc", pause = .5, with_newlines = True)
         received = self.receive_text()
-        self.assertEquals("a\r\nb\r\nc", received)
+        self.assertEquals("a\nb\nc", received)
 
     def testNewlinesWithoutNewlines(self):
         "Make sure that with_newlines option works"
@@ -262,13 +265,14 @@ class SendKeysTests(unittest.TestCase):
         self.assertEquals("<Y down>", str(KeyAction("Y", up=False)))
         self.assertEquals("<Y up>", str(KeyAction("Y", down=False)))
         #self.assertEquals("<ENTER>", str(VirtualKeyAction(13))) # == "<VK_RETURN>" in Python 2.7 (TODO)
-        self.assertEquals("<PAUSE 1.00>", str(PauseAction(1.0)))
+        if sys.platform == 'win32':
+            self.assertEquals("<PAUSE 1.00>", str(PauseAction(1.0)))
 
     def testRepetition(self):
         "Make sure that repeated action works"
-        SendKeys("{TAB 3}{PAUSE 0.5}{F 2}", pause = .3)
+        SendKeys("{TAB 3}{PAUSE 0.5}{F 3}", pause = .3)
         received = self.receive_text()
-        self.assertEquals("\t\t\tFF", received)
+        self.assertEquals("\t\t\tFFF", received)
 
 
 class SendKeysModifiersTests(unittest.TestCase):

@@ -22,6 +22,7 @@ else:
     send_keys_dir = os.path.join(parent_dir, r"Linux/")
     sys.path.insert(0, send_keys_dir)
     from SendKeys import SendKeys
+    import clipboard
 
 
 def _test_app():
@@ -75,7 +76,8 @@ class MouseTests(unittest.TestCase):
             data = win32clipboard.GetClipboardData()
             win32clipboard.CloseClipboard()
         else:
-            pass
+            data = clipboard.get_data()
+            print(data)
         return data
 
     def test_position(self):
