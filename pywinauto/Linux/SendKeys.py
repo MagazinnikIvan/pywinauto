@@ -260,7 +260,7 @@ class KeyAction(object):
         self.is_shifted = False
 
     def _key_modifiers(self, ctrl, shift, alt, action = X.KeyPress):
-        """Apply key modcifiers"""
+        """Apply key modifiers"""
         if ctrl:
             fake_input(_display, action, CODES['VK_CONTROL'])
         if shift:
