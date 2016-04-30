@@ -257,9 +257,10 @@ class KeyAction(object):
         self.ctrl = False
         self.alt = False
         self.shift = False
+        self.is_shifted = False
 
     def _key_modifiers(self, ctrl, shift, alt, action = X.KeyPress):
-        """Apply key modifiers"""
+        """Apply key modcifiers"""
         if ctrl:
             fake_input(_display, action, CODES['VK_CONTROL'])
         if shift:
@@ -269,7 +270,6 @@ class KeyAction(object):
 
     def Run(self):
         """Do a single 'keybord' action using xlib"""
-        is_shifted = False
         if type(self.key) == str:
             key = self.key
             self.key = Xlib.XK.string_to_keysym(self.key)
@@ -279,9 +279,9 @@ class KeyAction(object):
             if self.key == 0:
                 print("No button found")
                 return
-            is_shifted = key.isupper() or key in '~!@#$%^&*()_+{}|:"<>?'
+            self.is_shifted = key.isupper() or key in '~!@#$%^&*()_+{}|:"<>?'
 
-        self._key_modifiers(self.ctrl, (self.shift or is_shifted),
+        self._key_modifiers(self.ctrl, (self.shift or self.is_shifted),
                             self.alt, action = X.KeyPress)
         if self.up:
             fake_input(_display, X.KeyPress, self.key)
@@ -289,7 +289,7 @@ class KeyAction(object):
         if self.down:
             fake_input(_display, X.KeyRelease, self.key)
             _display.sync()
-        self._key_modifiers(self.ctrl, (self.shift or is_shifted),
+        self._key_modifiers(self.ctrl, (self.shift or self.is_shifted),
                             self.alt, action = X.KeyRelease)
         _display.sync()
 
@@ -387,6 +387,7 @@ def handle_code(code):
     return code_keys
 
 
+
 def parse_keys(string,
                 with_spaces = False,
                 with_tabs = False,
@@ -475,7 +476,6 @@ def parse_keys(string,
     # just in case there were any modifiers left pressed - release them
     while modifiers:
         keys.append(KeyAction(modifiers.pop(), down = False))
-
     return keys
 
 def SendKeys(keys,
