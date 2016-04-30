@@ -3,10 +3,14 @@ import os
 import subprocess
 import sys
 
+def cmd_exists(cmd):
+    return subprocess.call("type " + cmd, shell=True,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+
 def set_up_clipboard(is_input):
     command = []
     if sys.platform == 'linux':
-        if os.path.isfile('/bin/xclip') or os.path.isfile('/usr/bin/xclip'):
+        if cmd_exists('xclip'):
             command.append('xclip')
             if is_input:
                 command.append('-selection')
@@ -15,7 +19,7 @@ def set_up_clipboard(is_input):
                 command.append('-selection')
                 command.append('c')
                 command.append('-o')
-        elif os.path.isfile('/bin/xsel') or os.path.isfile('/usr/bin/xclip'):
+        elif cmd_exists('xsel'):
             command.append('xsel')
             command.append('-b')
             if is_input:
