@@ -47,7 +47,7 @@ class MouseTests(unittest.TestCase):
         else:
             self.display = Display()
             self.app = subprocess.Popen("exec " + _test_app(), shell=True)
-            time.sleep(1)
+            time.sleep(2)
 
     def tearDown(self):
         time.sleep(1)
@@ -83,6 +83,7 @@ class MouseTests(unittest.TestCase):
 
     def test_position(self):
         left, top = self.__get_pos(50)
+        mouse.click(coords=(left, top))
         mouse.click(coords=(left, top))
         data = self.__get_text()
         self.assertTrue(str(top) in data)
@@ -144,3 +145,4 @@ class MouseTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+    
