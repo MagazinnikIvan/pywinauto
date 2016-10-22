@@ -9,7 +9,7 @@ def cmd_exists(cmd):
 
 def set_up_clipboard(is_input):
     command = []
-    if sys.platform == 'linux':
+    if sys.platform == 'linux' or sys.platform == 'linux2':
         if cmd_exists('xclip'):
             command.append('xclip')
             if is_input:
