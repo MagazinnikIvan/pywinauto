@@ -46,7 +46,7 @@ class MouseTests(unittest.TestCase):
             self.dlg = self.app.mousebuttons
         else:
             self.display = Display()
-            self.app = subprocess.Popen(_test_app(), shell=True)
+            self.app = subprocess.Popen("exec " + _test_app(), shell=True)
             time.sleep(1)
 
     def tearDown(self):
@@ -69,6 +69,7 @@ class MouseTests(unittest.TestCase):
     def __get_text(self):
         # this function will be change after clipboard.py changes
         data = ''
+        time.sleep(1)
         SendKeys('^a')
         SendKeys('^c')
         if sys.platform == 'win32':
@@ -81,7 +82,7 @@ class MouseTests(unittest.TestCase):
         return data
 
     def test_position(self):
-        left, top = self.__get_pos(60)
+        left, top = self.__get_pos(50)
         mouse.click(coords=(left, top))
         data = self.__get_text()
         self.assertTrue(str(top) in data)
