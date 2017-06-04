@@ -1,7 +1,9 @@
 import os
 import pgi
-pgi.require_version("Gtk", "4.0")
-from pgi.repository import Gtk, Gdk
+pgi.install_as_gi()
+from gi import require_version
+require_version("Gtk", "3.0")
+from gi.repository import Gtk, Gdk
 
 
 class Handler:
