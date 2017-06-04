@@ -1,6 +1,6 @@
 import os
 import pgi
-pgi.require_version("Gtk", "3.0")
+pgi.require_version("Gtk", "4.0")
 from pgi.repository import Gtk, Gdk
 
 
