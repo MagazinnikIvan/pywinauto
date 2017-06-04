@@ -1,6 +1,8 @@
-import pgi
 import os
-from pgi.repository import Gtk, Gdk
+import pgi
+pgi.install_as_gi()
+
+from gi.repository import Gtk, Gdk
 
 
 class Handler:
