@@ -28,7 +28,7 @@ install:
   - pip install vext
   - pip install vext.gi
   - pip install pgi
-  #- sudo aptitude install libgtk2.0-dev
+  - sudo aptitude install libgtk2.0-dev
   - source /opt/qt58/bin/qt58-env.sh;
   
 before_script:
@@ -59,9 +59,6 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - coverage run -a --source=pywinauto/mouse.py pywinauto/unittests/test_mouse.py
-  - coverage run -a --source=pywinauto/linux/keyboard.py pywinauto/unittests/test_keyboard.py
-  - coverage run -a --source=pywinauto/linux/clipboard.py pywinauto/unittests/test_clipboard_linux.py
   - coverage run -a --source=pywinauto/linux/atspi_element_info.py pywinauto/unittests/test_atspi_element_info.py
 
 after_success:
