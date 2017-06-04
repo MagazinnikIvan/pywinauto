@@ -29,6 +29,7 @@ install:
   - pip install vext.gi
   - pip install pgi
   - sudo aptitude install libgtk2.0-dev
+  - sudo apt-get install libgirepository-1.0-1
   - source /opt/qt58/bin/qt58-env.sh;
   
 before_script:
