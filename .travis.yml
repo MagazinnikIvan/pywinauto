@@ -27,6 +27,7 @@ install:
   - sudo apt-get install xsel
   - pip install vext
   - pip install vext.gi
+  - pip install pgi
   #- sudo aptitude install libgtk2.0-dev
   - source /opt/qt58/bin/qt58-env.sh;
   
