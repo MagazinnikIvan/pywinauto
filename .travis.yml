@@ -28,8 +28,9 @@ install:
   - pip install vext
   - pip install vext.gi
   - pip install pgi
-  - sudo apt-get install libgtk2.0-dev
-  - sudo apt-get install libgirepository-1.0-1
+  #- sudo apt-get install libgtk2.0-dev
+  #- sudo apt-get install libgirepository-1.0-1
+  - sudo apt-get install python3-gi
   - source /opt/qt58/bin/qt58-env.sh;
   
 before_script:
@@ -60,9 +61,9 @@ before_script:
   - cd $TRAVIS_BUILD_DIR
 
 script:
-  - wget http://launchpadlibrarian.net/205364775/libgtk-3-0_3.12.2-0ubuntu15.3_amd64.deb
-  - sudo dpkg -i libgtk-3-0_3.12.2-0ubuntu15.3_amd64.deb
-  - sudo apt-get -f install
+  #- wget http://launchpadlibrarian.net/205364775/libgtk-3-0_3.12.2-0ubuntu15.3_amd64.deb
+  #- sudo dpkg -i libgtk-3-0_3.12.2-0ubuntu15.3_amd64.deb
+  #- sudo apt-get -f install
   - coverage run -a --source=pywinauto/linux/atspi_element_info.py pywinauto/unittests/test_atspi_element_info.py
 
 after_success:
