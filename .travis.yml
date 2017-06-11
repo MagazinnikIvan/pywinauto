@@ -31,6 +31,7 @@ install:
   - sudo apt-get install libgtk2.0-dev
   - wget http://launchpadlibrarian.net/205364775/libgtk-3-0_3.12.2-0ubuntu15.3_amd64.deb
   - sudo dpkg -i libgtk-3-0_3.12.2-0ubuntu15.3_amd64.deb
+  - sudo apt-get -f install
   - sudo apt-get install libgirepository-1.0-1
   - source /opt/qt58/bin/qt58-env.sh;
   
