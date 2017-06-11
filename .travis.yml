@@ -25,6 +25,8 @@ install:
   - sudo apt-get install -qq qt58base; 
   - sudo apt-get -y install qt58declarative qt58tools
   - sudo apt-get install xsel
+  - sudo apt-get update
+  - sudo apt-get install libgtk-3-dev
   - pip install vext
   - pip install vext.gi
   - pip install pgi
