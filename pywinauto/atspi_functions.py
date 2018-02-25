@@ -54,6 +54,8 @@ class AtspiFunctions:
             libraries = stdout[0]
             for lib in libraries.split("\n"):
                 if self.LIB in lib:
+                    print(lib)
+                    print(lib.split()[0])
                     return lib.split()[0]
 
         except FileNotFoundError:
