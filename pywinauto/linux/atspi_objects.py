@@ -454,7 +454,8 @@ class IATSPI(object):
                 self.known_control_types[ctrl_type] = type_id
                 self.known_control_type_ids[type_id] = ctrl_type
 
-        except Exception:
+        except Exception as e:
+            print(e)
             message = "atspi library not installed. Please install at-spi2 library or choose another backend"
             raise Exception(message)
 
