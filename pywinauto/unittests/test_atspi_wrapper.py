@@ -77,7 +77,7 @@ if sys.platform.startswith("linux"):
         def test_can_get_rectangle(self):
             rect = self.app_wrapper.Frame.Panel.rectangle()
             self.assertEqual(rect.width(), 600)
-            self.assertEqual(rect.height(), 200)
+            self.assertEqual(rect.height(), 492)
 
         def test_can_get_process_id(self):
             self.assertEqual(self.app_wrapper.process_id(), self.app.process)
