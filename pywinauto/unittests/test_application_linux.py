@@ -24,7 +24,7 @@ def _test_app():
 
 
 def _test_app_cmd_line():
-    return "python3 {}".format(_test_app())
+    return "python3.4 {}".format(_test_app())
 
 
 sys.path.append(".")
@@ -79,7 +79,7 @@ if sys.platform != 'win32':
             subprocess_app = subprocess.Popen(['python3', _test_app()], stdout=subprocess.PIPE, shell=False)
             time.sleep(1)
             app = Application()
-            app.connect(path="python3 {}".format(_test_app()))
+            app.connect(path="python3.4 {}".format(_test_app()))
             self.assertEqual(app.process, subprocess_app.pid)
             app.kill()
 

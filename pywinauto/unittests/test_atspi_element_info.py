@@ -40,7 +40,7 @@ if sys.platform.startswith("linux"):
         def setUp(self):
             self.desktop_info = AtspiElementInfo()
             self.app = Application()
-            self.app.start("python3 " + _test_app())
+            self.app.start("python3.4 " + _test_app())
             time.sleep(1)
             self.app_info = self.get_app(app_name)
 

@@ -42,7 +42,7 @@ if sys.platform.startswith("linux"):
             self.desktop_info = AtspiElementInfo()
             self.desktop_wrapper = AtspiWrapper(self.desktop_info)
             self.app = Application()
-            self.app.start("python3 " + _test_app())
+            self.app.start("python3.4 " + _test_app())
             time.sleep(1)
             self.app_wrapper = self.app.gtk_example
 
