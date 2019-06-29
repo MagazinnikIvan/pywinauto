@@ -67,7 +67,7 @@ if sys.platform != 'win32':
 
         def test_connect_by_pid(self):
             """Create application wia subprocess then connect it to Application"""
-            subprocess_app = subprocess.Popen(['python3', _test_app()], stdout=subprocess.PIPE, shell=False)
+            subprocess_app = subprocess.Popen(['python3.4', _test_app()], stdout=subprocess.PIPE, shell=False)
             time.sleep(1)
             app = Application()
             app.connect(process=subprocess_app.pid)
@@ -76,10 +76,10 @@ if sys.platform != 'win32':
 
         def test_connect_by_path(self):
             """Create application wia subprocess then connect it to Application by application name"""
-            subprocess_app = subprocess.Popen(['python3', _test_app()], stdout=subprocess.PIPE, shell=False)
+            subprocess_app = subprocess.Popen(['python3.4', _test_app()], stdout=subprocess.PIPE, shell=False)
             time.sleep(1)
             app = Application()
-            app.connect(path="python3.4 {}".format(_test_app()))
+            app.connect(path='python3.4 {}'.format(_test_app()))
             self.assertEqual(app.process, subprocess_app.pid)
             app.kill()
 
@@ -114,7 +114,7 @@ if sys.platform != 'win32':
             self.assertTrue(app.kill())
 
         def test_kill_connected_app(self):
-            subprocess_app = subprocess.Popen(['python3', _test_app()], stdout=subprocess.PIPE, shell=False)
+            subprocess_app = subprocess.Popen(['python3.4', _test_app()], stdout=subprocess.PIPE, shell=False)
             time.sleep(1)
             app = Application()
             app.connect(process=subprocess_app.pid)
